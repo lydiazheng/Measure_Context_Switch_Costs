@@ -33,9 +33,14 @@ timespecDiff:
 .LFE0:
 	.size	timespecDiff, .-timespecDiff
 	.section	.rodata
-	.align 8
 .LC0:
-	.string	"A bare function call measured: %llu\n"
+	.string	"result   %llu\n"
+	.align 8
+.LC1:
+	.string	"Based on 1000 times of the measurement,"
+	.align 8
+.LC2:
+	.string	"The averae time of a bare function call measured: %llu\n"
 	.text
 	.globl	main
 	.type	main, @function
@@ -47,7 +52,11 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$48, %rsp
+	subq	$64, %rsp
+	movq	$0, -56(%rbp)
+	movq	$0, -48(%rbp)
+	jmp	.L4
+.L5:
 	leaq	-32(%rbp), %rax
 	movq	%rax, %rsi
 	movl	$3, %edi
@@ -65,8 +74,26 @@ main:
 	call	timespecDiff
 	movq	%rax, -40(%rbp)
 	movq	-40(%rbp), %rax
+	addq	%rax, -56(%rbp)
+	movq	-40(%rbp), %rax
 	movq	%rax, %rsi
 	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+	addq	$1, -48(%rbp)
+.L4:
+	cmpq	$99, -48(%rbp)
+	jbe	.L5
+	movl	$.LC1, %edi
+	call	puts
+	movq	-56(%rbp), %rax
+	shrq	$2, %rax
+	movabsq	$2951479051793528259, %rdx
+	mulq	%rdx
+	movq	%rdx, %rax
+	shrq	$2, %rax
+	movq	%rax, %rsi
+	movl	$.LC2, %edi
 	movl	$0, %eax
 	call	printf
 	leave

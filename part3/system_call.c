@@ -14,11 +14,18 @@ int main(){
 	struct timespec start;//imespec struct argument specfied in <time.h>
 	struct timespec stop;//imespec struct argument specfied in <time.h>
 	unsigned long long result; //64 bit integer
+	unsigned long long sum = 0;
+	unsigned long long i; // the count of the loop
 
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
-	getpid();
-	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);//get the stop time of CLOCK_THREAD_CPUTIME_ID
-	
-	result=timespecDiff(&stop,&start);// get the difference between start and stop
-	printf("A bare function call measured: %llu\n",result);//output
+	for(i = 0; i < 100; i++){
+		clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
+		getpid();
+		clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);//get the stop time of CLOCK_THREAD_CPUTIME_ID
+		
+		result = timespecDiff(&stop,&start);// get the difference between start and stop
+		sum += result;
+		printf("result     %llu\n", result);
+	}
+	printf("Based on 1000 times of the measurement,\n");
+	printf("The average time of a bare function call measured: %llu\n",sum/100);//output
 }
