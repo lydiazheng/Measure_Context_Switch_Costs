@@ -20,41 +20,49 @@ int main(){
 	unsigned long long result; //64 bit integer
 	unsigned long long sum = 0;// the sum of each time measurement
 	unsigned long long i; // the count of the loop
-	char byte = 'a';// a single byte message
+	char byte = 'z';// a single byte message
 	pid_t pid;
 
 	for(i = 0; i < MAXSize; i++){
-		int fd[2];// connect all processes
+		int fdP[2];// pipe parent uses to contact child
+		int fdC[2];// pipe child uses to contact child
 
-		if(pipe(fd) < 0){
+		pipe(fdP);// parent to child
+		pipe(fdC);//child to parent
+		if((pid = fork()) < 0){
 			printf("***ERROR: pipe creat failed!\n");
 			exit(1);
 		}
 
-		pid = fork();
 		if(pid < 0){
 			printf("***ERROR: forking child process failed.\n");
 			exit(1);
 		}
 		if(pid == 0){//child process
-			close(fd[1]);//close the child process from parent write
-			read(fd, &byte, sizeof(byte));//read the process
+			close(fdC[1]);//the child closes the output side of its pipe
+			close(fdP[0]);//the child closes the parents input side
+			read(fdC[0], &byte, sizeof(byte));//read the process
+			write(fdP[1], &byte, sizeof(byte));
 			exit(1);
 		}
 		else{ //parent process
-			close(fd[0]);//close parent process from child read
+			close(fdP[1]);//the parent closes the output side of its pipe
+			close(fdC[0]);//the parent closes the child input side
 			clock_gettime(CLOCK_MONOTONIC, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
-			write(fd, &byte, sizeof(byte));//the parent process write only
+			write(fdC[1], &byte, sizeof(byte));//the parent process write only
 			wait(NULL);
+
+			close(fdP[1]);//the parent closes the output side of its pipe
+			close(fdC[0]);//the parent closes the child input side
+			read(fdC[0], &byte, sizeof(byte));//read the pipe after child process stop
 			clock_gettime(CLOCK_MONOTONIC, &stop);//get the stop time of CLOCK_MONOTONIC
-			close(fd[1]);
 		}
 		result = timespecDiff(&stop, &start);// get the difference between start and stop
 		printf("result   %llu\n", result);
 		sum += result;
 	}
-	printf("Based on 1000 times of the measurement,\n");
+	printf("Based on 100 times of the measurement,\n");
 	printf("The average time of a process switching measured: %llu\n",sum/100);//output
-
+	return 0;
 	
 }

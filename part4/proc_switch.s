@@ -42,7 +42,7 @@ timespecDiff:
 	.string	"result   %llu\n"
 	.align 8
 .LC3:
-	.string	"Based on 1000 times of the measurement,"
+	.string	"Based on 100 times of the measurement,"
 	.align 8
 .LC4:
 	.string	"The average time of a process switching measured: %llu\n"
@@ -57,45 +57,60 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$80, %rsp
+	subq	$96, %rsp
 	movq	$0, -56(%rbp)
-	movb	$97, -69(%rbp)
+	movb	$122, -85(%rbp)
 	movq	$0, -48(%rbp)
 	jmp	.L4
 .L8:
+	leaq	-80(%rbp), %rax
+	movq	%rax, %rdi
+	call	pipe
 	leaq	-64(%rbp), %rax
 	movq	%rax, %rdi
 	call	pipe
-	testl	%eax, %eax
+	call	fork
+	movl	%eax, -84(%rbp)
+	cmpl	$0, -84(%rbp)
 	jns	.L5
 	movl	$.LC0, %edi
 	call	puts
 	movl	$1, %edi
 	call	exit
 .L5:
-	call	fork
-	movl	%eax, -68(%rbp)
-	cmpl	$0, -68(%rbp)
+	cmpl	$0, -84(%rbp)
 	jns	.L6
 	movl	$.LC1, %edi
 	call	puts
 	movl	$1, %edi
 	call	exit
 .L6:
-	cmpl	$0, -68(%rbp)
+	cmpl	$0, -84(%rbp)
 	jne	.L7
 	movl	-60(%rbp), %eax
 	movl	%eax, %edi
 	call	close
-	leaq	-64(%rbp), %rax
-	leaq	-69(%rbp), %rcx
+	movl	-80(%rbp), %eax
+	movl	%eax, %edi
+	call	close
+	movl	-64(%rbp), %eax
+	leaq	-85(%rbp), %rcx
 	movl	$1, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
 	call	read
-	movl	$1, %edi
+	movl	-76(%rbp), %eax
+	leaq	-85(%rbp), %rcx
+	movl	$1, %edx
+	movq	%rcx, %rsi
+	movl	%eax, %edi
+	call	write
+	movl	$78, %edi
 	call	exit
 .L7:
+	movl	-76(%rbp), %eax
+	movl	%eax, %edi
+	call	close
 	movl	-64(%rbp), %eax
 	movl	%eax, %edi
 	call	close
@@ -103,8 +118,8 @@ main:
 	movq	%rax, %rsi
 	movl	$1, %edi
 	call	clock_gettime
-	leaq	-64(%rbp), %rax
-	leaq	-69(%rbp), %rcx
+	movl	-60(%rbp), %eax
+	leaq	-85(%rbp), %rcx
 	movl	$1, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
@@ -112,13 +127,22 @@ main:
 	movl	$0, %eax
 	movq	%rax, %rdi
 	call	wait
+	movl	-76(%rbp), %eax
+	movl	%eax, %edi
+	call	close
+	movl	-64(%rbp), %eax
+	movl	%eax, %edi
+	call	close
 	leaq	-16(%rbp), %rax
 	movq	%rax, %rsi
 	movl	$1, %edi
 	call	clock_gettime
-	movl	-60(%rbp), %eax
+	movl	-64(%rbp), %eax
+	leaq	-85(%rbp), %rcx
+	movl	$1, %edx
+	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	close
+	call	read
 	leaq	-32(%rbp), %rdx
 	leaq	-16(%rbp), %rax
 	movq	%rdx, %rsi
@@ -148,6 +172,7 @@ main:
 	movl	$.LC4, %edi
 	movl	$0, %eax
 	call	printf
+	movl	$0, %eax
 	leave
 	.cfi_def_cfa 7, 8
 	ret

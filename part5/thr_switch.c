@@ -2,9 +2,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <pthread.h>
 #define MAXSize 100
 
 unsigned long long timespecDiff(struct timespec *timeA_p, struct timespec *timeB_p)// timeA_p is the start time, timeB_p is the stop time
@@ -14,11 +12,12 @@ unsigned long long timespecDiff(struct timespec *timeA_p, struct timespec *timeB
            														//change second to nanosecond, 1 second = 1*10^9 nanoseconds
 }
 
+
 int main(){
+	struct timespec start;//imespec struct argument specfied in <time.h>
+	struct timespec stop;//imespec struct argument specfied in <time.h>
+	unsigned long long result; //64 bit integer
 
 
-
-
-
-
+	return 0;
 }

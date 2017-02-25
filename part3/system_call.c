@@ -28,4 +28,5 @@ int main(){
 	}
 	printf("Based on 1000 times of the measurement,\n");
 	printf("The average time of a bare function call measured: %llu\n",sum/100);//output
+	return 0;
 }
