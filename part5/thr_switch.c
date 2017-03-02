@@ -70,7 +70,6 @@ void *thread1(){
             pthread_cond_wait(&cond1, &mutex);
             clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);
             result[i] = timespecDiff(&stop, &start);// get the difference between start and stop
-            num = 1;
         }
         num = 0;
         clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
@@ -95,7 +94,6 @@ void *thread2(){
             pthread_cond_wait(&cond2, &mutex);
             clock_gettime(CLOCK_THREAD_CPUTIME_ID, &stop);
             result[i] = timespecDiff(&stop, &start);// get the difference between start and stop
-            num = 0;
         }
         num = 1;
         clock_gettime(CLOCK_THREAD_CPUTIME_ID, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
