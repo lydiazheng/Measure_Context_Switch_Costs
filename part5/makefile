@@ -1,11 +1,14 @@
-thr_switch: thr_switch.o
-	gcc -o thr_switch thr_switch.o
+CC=gcc
+CXX=g++
+CCFLAGS= -g -std=c99 -Wall -Werror -lrt -pthread
 
-thr_switch.o: thr_switch.s 
-	gcc -c thr_switch.s
+all: thr_switch
 
-thr_switch.s: thr_switch.c 
-	gcc -S thr_switch.c
+%.o : %.c
+	$(CC) -c $(CCFLAGS) $<
+
+thr_switch:  thr_switch.o
+	$(CC) -o thr_switch thr_switch.o $(CCFLAGS)
 
 clean:
-	rm -f thr_switch *.o thr_switch.s
+	rm -f core *.o thr_switch
