@@ -40,7 +40,7 @@ timespecDiff:
 	.string	"Based on 1000 times of the measurement,"
 	.align 8
 .LC2:
-	.string	"The average time of a bare function call measured: %llu\n"
+	.string	"The average time of a getpid() system call measured: %llu\n"
 	.text
 	.globl	main
 	.type	main, @function
@@ -59,13 +59,13 @@ main:
 .L5:
 	leaq	-32(%rbp), %rax
 	movq	%rax, %rsi
-	movl	$3, %edi
+	movl	$1, %edi
 	call	clock_gettime
 	movl	$0, %eax
 	call	getpid
 	leaq	-16(%rbp), %rax
 	movq	%rax, %rsi
-	movl	$3, %edi
+	movl	$1, %edi
 	call	clock_gettime
 	leaq	-32(%rbp), %rdx
 	leaq	-16(%rbp), %rax
@@ -82,20 +82,21 @@ main:
 	call	printf
 	addq	$1, -48(%rbp)
 .L4:
-	cmpq	$99, -48(%rbp)
+	cmpq	$999, -48(%rbp)
 	jbe	.L5
 	movl	$.LC1, %edi
 	call	puts
 	movq	-56(%rbp), %rax
-	shrq	$2, %rax
-	movabsq	$2951479051793528259, %rdx
+	shrq	$3, %rax
+	movabsq	$2361183241434822607, %rdx
 	mulq	%rdx
 	movq	%rdx, %rax
-	shrq	$2, %rax
+	shrq	$4, %rax
 	movq	%rax, %rsi
 	movl	$.LC2, %edi
 	movl	$0, %eax
 	call	printf
+	movl	$0, %eax
 	leave
 	.cfi_def_cfa 7, 8
 	ret

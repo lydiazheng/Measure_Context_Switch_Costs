@@ -82,20 +82,21 @@ main:
 	call	printf
 	addq	$1, -48(%rbp)
 .L4:
-	cmpq	$99, -48(%rbp)
+	cmpq	$999, -48(%rbp)
 	jbe	.L5
 	movl	$.LC1, %edi
 	call	puts
 	movq	-56(%rbp), %rax
-	shrq	$2, %rax
-	movabsq	$2951479051793528259, %rdx
+	shrq	$3, %rax
+	movabsq	$2361183241434822607, %rdx
 	mulq	%rdx
 	movq	%rdx, %rax
-	shrq	$2, %rax
+	shrq	$4, %rax
 	movq	%rax, %rsi
 	movl	$.LC2, %edi
 	movl	$0, %eax
 	call	printf
+	movl	$0, %eax
 	leave
 	.cfi_def_cfa 7, 8
 	ret

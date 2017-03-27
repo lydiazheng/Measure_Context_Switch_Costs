@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 199309L
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -9,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sched.h>
-#define MAXSize 100
+#define MAXSize 1000
 
 unsigned long long timespecDiff(struct timespec *timeA_p, struct timespec *timeB_p)// timeA_p is the start time, timeB_p is the stop time
 {
@@ -21,8 +20,15 @@ unsigned long long timespecDiff(struct timespec *timeA_p, struct timespec *timeB
 int main(){
 	struct timespec start;//imespec struct argument specfied in <time.h>
 	struct timespec stop;//imespec struct argument specfied in <time.h>
+	struct timespec for_start;
+	struct timespec for_stop;
+	struct timespec time_start;
+	struct timespec time_stop;
 
 	unsigned long long result; //64 bit integer
+	unsigned long long for_loop; //time for the for loop
+	unsigned long long time_fnc; //time for the for time
+
 	unsigned long long sum = 0;// the sum of each time measurement
 	unsigned long long i; // the count of the loop
 	char byte = 'z';// a single byte message
@@ -59,20 +65,31 @@ int main(){
 	else{ //parent process
 		close(fdP[1]);//the parent closes the output side of its pipe
 		close(fdC[0]);//the parent closes the child input side
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
+		clock_gettime(CLOCK_MONOTONIC, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
 		for(i = 0; i < MAXSize; i++){
 			write(fdC[1], &byte, sizeof(byte));//the parent process write only
-			read(fdC[0], &byte, sizeof(byte));
+			read(fdP[0], &byte, sizeof(byte));
 		}
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+		clock_gettime(CLOCK_MONOTONIC, &stop);
 		wait(NULL);
-
 	
 		result = timespecDiff(&stop, &start);// get the difference between start and stop
-		printf("result   %llu\n", result);
 		sum += result;
 	}
-	printf("Based on 100 times of the measurement,\n");
+	//delete the forloop time
+	clock_gettime(CLOCK_MONOTONIC, &for_start);
+	for(i = 0; i < MAXSize; i++){}
+	clock_gettime(CLOCK_MONOTONIC, &for_stop);
+	for_loop = timespecDiff(&for_stop, &for_start);
+	sum -= for_loop;
+
+	//delete the clock_gettime() time
+	clock_gettime(CLOCK_MONOTONIC, &time_start);
+	clock_gettime(CLOCK_MONOTONIC, &time_stop);
+	time_fnc = timespecDiff(&time_stop, &time_start);
+	sum -= time_fnc*MAXSize;
+
+	printf("Based on 1000 times of the measurement,\n");
 	printf("The average time of a process switching measured: %llu\n",sum/MAXSize);//output
 	return 0;
 	

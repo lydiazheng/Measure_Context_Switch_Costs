@@ -18,7 +18,7 @@ int main(){
 	unsigned long long sum = 0; // the sum of each time measurement
 	unsigned long long i; //the count of the loop
 
-	for(i = 0; i < 100; i++){
+	for(i = 0; i < 1000; i++){
 		clock_gettime(CLOCK_MONOTONIC, &start);//retrieve the time of the specified clock CLOCK_THREAD_CPUTIME_ID
 		bare_fnc();
 		clock_gettime(CLOCK_MONOTONIC, &stop);//get the stop time of CLOCK_MONOTONIC
@@ -28,7 +28,7 @@ int main(){
 		printf("result   %llu\n", result);
 	}
 	printf("Based on 1000 times of the measurement,\n");
-	printf("The averae time of a bare function call measured: %llu\n",sum/100);//output
+	printf("The averae time of a bare function call measured: %llu\n",sum/1000);//output
 	return 0;
 }
 
