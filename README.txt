@@ -10,7 +10,7 @@ I separate the whole project into 5 parts
 		 2. type './bare_fnc'
 		 The output is: 
 		 Based on 1000 times of the measurement,
-		 The averae time of a bare function call measured: 42
+		 The average time of a bare function call measured: 42
 
 --Part3: 1. type 'make'
 		 2. type './system_call'
